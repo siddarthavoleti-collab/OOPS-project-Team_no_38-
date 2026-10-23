@@ -1,4 +1,4 @@
-#include "utils.h"
+#include "trainer.h"
 
 unordered_map<string, int> atkdmg = {
     {"Tackle", 20},
@@ -22,7 +22,7 @@ unordered_map<string, int> atkdmg = {
     {"Dragon Claw", 40},
     {"Aerial Ace", 30}
 };
-
+//pokemon class defenitions
 pokemon::pokemon(string n, string t, int l, int tid, int h, int a, vector<string> att){
     name = n;
     type = t;
@@ -33,10 +33,45 @@ pokemon::pokemon(string n, string t, int l, int tid, int h, int a, vector<string
     attacks = att;
 }
 
+
+ostream& operator<<(ostream& out, pokemon& p) {
+    out << "Name: " << p.name
+        << "\nType: " << p.type
+        << "\nLevel: " << p.level
+        << "\nHP: " << p.hp
+        << "\nAttack: " << p.atk
+        << "\nAttacks: ";
+
+    for (string a : p.attacks)
+        out << a << " ";
+
+    return out;
+}
+
+istream& operator>>(istream& in, pokemon& p) {
+    in >> p.name >> p.type >> p.level >> p.hp >> p.atk;
+
+    int n;
+    in >> n;
+    p.attacks.clear();
+
+    for (int i = 0; i < n; i++) {
+        string attack;
+        in >> attack;
+        p.attacks.push_back(attack);
+    }
+
+    return in;
+}
+
+
+
 int pokemon::dodmg(string atkname, string pokemonname) {
     cout<<"you attacked "<<pokemonname<<"with "<<atkname;
     return atkdmg[atkname];
 }
+
+
 
 int pokemon::takedmg(string atkname, string pokemonname) {
     cout<<pokemonname<<" attacked you with "<<atkname;
@@ -44,6 +79,13 @@ int pokemon::takedmg(string atkname, string pokemonname) {
     if (hp < 0) hp = 0;
     return hp;
 }
+
+
+string pokemon::
+ getname() {
+    return name;
+}
+
 
 bool pokemon::isowned() {
     return trainerid != -1;
@@ -58,35 +100,62 @@ void pokemon::getownerid() {
 }
 
 
+
+//trainer class defenitions 
+ostream& operator<<(ostream& out, trainer& t) {
+    out << "Name: " << t.name
+        << "\nTrainer ID: " << t.trainerid
+        << "\nWallet: " << t.wallet
+        << "\nLevel: " << t.level
+        << "\nPokemons:\n";
+
+    for (auto p : t.pokemons) {
+        out << *(p.second) << "\n";
+    }
+
+    return out;
+}
+
+istream& operator>>(istream& in, trainer& t) {
+    in >> t.name >> t.trainerid >> t.wallet >> t.level;
+    return in;
+}
+
+
 trainer::trainer(string n, int id, int w,int l, vector<pokemon*> p){
     name = n;
-    id = id;
+    trainerid = id;
     wallet = w;
     level = l;
-    pokemons = p;
+    for(int i=0;i<p.size();i++){
+    pokemons[p[i]->getname()] = p[i];
+    }
 }
 
 void trainer::catchPokemon(pokemon& p) {
     if (!p.isowned()) {
         p.setowner(trainerid);
-        pokemons[p.name] = p;
-        cout<<"Congrats you just caught a "<<p.name;
+        pokemons[p.getname()] = &p;
+        cout<<"Congrats you just caught a "<<p.getname();
     }
 }
 
-void trainer::trade(trainer& other, string pname) {
-    if (pokemons.find(pname) != pokemons.end()) {
+void trainer::trade(trainer& other, string recieving, string pname) {
+    if (pokemons.find(pname) != pokemons.end() &&
+        other.pokemons.find(recieving) != other.pokemons.end()) {
         pokemon* p = pokemons[pname];
 
         p->setowner(other.trainerid);
         other.pokemons[pname] = p;
         pokemons.erase(pname);
     }
-}
 
-void trainer::showinv() {  //not yet added in header file having confusion how to do
-    for (string item : inventory)
-        cout << item << endl;
+    if (other.pokemons.find(pname) != other.pokemons.end() &&
+        pokemons.find(recieving) != pokemons.end()) {
+        pokemon* p = other.pokemons[recieving];
 
-    cout << "Pokemons: " << pokemons.size() << endl;
+        p->setowner(trainerid);
+        pokemons[recieving] = p;
+        other.pokemons.erase(recieving);
+    }
 }
