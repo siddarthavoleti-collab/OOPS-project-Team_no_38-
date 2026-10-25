@@ -1,58 +1,28 @@
 #include "environment.h"
+#include "trainer.h"
+#include "pokemon.h"
 
-
-Environment::Environment(){
-    nextTrainerId=1;
-    nextPokemonId=1;
+Environment::Environment() {
+    nextTrainerId = 1;
 }
 
 Environment::~Environment() {
-    for (Trainer* t : trainers) {
-        delete t;
-    }
-
-    for (pokemon* p : pokemons) {
-        delete p;
-    }
+    for (int i = 0; i < trainers.size(); i++)
+        delete trainers[i];
+    for (int i = 0; i < pokemons.size(); i++)
+        delete pokemons[i];
 }
 
-Trainer* Environment::addTrainer(
-    const std::string& name,
-    int wallet,
-    int level
-) {
-    Trainer* t = new Trainer(
-        name,
-        nextTrainerId,
-        wallet,
-        level
-    );
-
+trainer* Environment::addTrainer(string name, int wallet, int level) {
+    trainer* t = new trainer(name, nextTrainerId, wallet, level);
     trainers.push_back(t);
     nextTrainerId++;
-
     return t;
 }
-pokemon* Environment::addPokemon(
-    const std::string& name,
-    const std::string& type,
-    int level,
-    int maxHp,
-    int atk,
-    const std::vector<std::string>& attacks
-) {
-    pokemon* p = new pokemon(
-        nextPokemonId,
-        name,
-        type,
-        level,
-        maxHp,
-        atk,
-        attacks
-    );
 
+pokemon* Environment::addPokemon(string name, string type, int level,
+                                 int hp, int atk, vector<string> attacks) {
+    pokemon* p = new pokemon(name, type, level, -1, hp, atk, attacks);
     pokemons.push_back(p);
-    nextPokemonId++;
-
     return p;
 }
