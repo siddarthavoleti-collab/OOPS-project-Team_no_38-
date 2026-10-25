@@ -1,29 +1,25 @@
-#include <vector>
+#ifndef ENVIRONMENT_H
+#define ENVIRONMENT_H
 
-class Trainer;
+#include <string>
+#include <vector>
+using namespace std;
+
+class trainer;
 class pokemon;
 
-class Environment
-{
+// Creates and owns every trainer and pokemon (frees them in the destructor)
+class Environment {
 private:
-    // Non-owning pointers to existing objects
-    std::vector<Trainer *> trainers;
-    std::vector<Pokemon *> pokemons;
-
+    vector<trainer*> trainers;
+    vector<pokemon*> pokemons;
     int nextTrainerId;
-    int nextPokemonId;
-
 public:
     Environment();
     ~Environment();
-
-    Trainer *addTrainer(const std::string &name,
-                        int wallet = 0,
-                        int level = 0);
-    pokemon *addPokemon(const std::string &name,
-                        const std::string &type = "normal",
-                        int level = 1,
-                        int maxHp = 100,
-                        int atk = 20,
-                        const std::vector<std::string> &attacks = {});
+    trainer* addTrainer(string name, int wallet = 0, int level = 1);
+    pokemon* addPokemon(string name, string type = "normal", int level = 1,
+                        int hp = 100, int atk = 20,
+                        vector<string> attacks = {});
 };
+#endif
