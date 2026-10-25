@@ -1,16 +1,20 @@
 #include "pokemon.h"
-class trainer{
-    private:
-    string name;
-    int trainerid;
+
+class pokemon;
+class Trainer {
+private:
+    std::string name;
+    int trainerId;
     int wallet;
     int level;
-     unordered_map<string,pokemon*> pokemons;
-     public:
-      friend ostream& operator<<(ostream&,trainer&);
-     friend istream& operator>>(istream&,trainer&);
-     trainer(string,int=0,int=0,int = 0,vector<pokemon*> = {});
-     void catchPokemon(pokemon& p);
-     void trade(trainer&,string,string);
-     void showinv();
+
+    // Non-owning pointers to Pokémon owned by this trainer.
+    std::vector<Pokemon*> pokemons;
+
+public:
+    Trainer(const std::string& name, int trainerId,
+            int wallet = 0, int level = 0);
+
+    int getId() const;
+    const std::string& getName() const;
 };

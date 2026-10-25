@@ -1,6 +1,6 @@
 #include "trainer.h"
-
-unordered_map<string, int> atkdmg = {
+#include "pokemon.h"
+const std::unordered_map<std::string, int> pokemon::atkdmg = {
     {"Tackle", 20},
     {"Scratch", 15},
     {"Flamethrower", 40},
@@ -22,16 +22,7 @@ unordered_map<string, int> atkdmg = {
     {"Dragon Claw", 40},
     {"Aerial Ace", 30}
 };
-//pokemon class defenitions
-pokemon::pokemon(string n, string t, int l, int tid, int h, int a, vector<string> att){
-    name = n;
-    type = t;
-    level = l;
-    trainerid = tid;
-    hp = h;
-    atk = a;
-    attacks = att;
-}
+
 
 
 ostream& operator<<(ostream& out, pokemon& p) {
@@ -66,19 +57,6 @@ istream& operator>>(istream& in, pokemon& p) {
 
 
 
-int pokemon::dodmg(string atkname, string pokemonname) {
-    cout<<"you attacked "<<pokemonname<<"with "<<atkname;
-    return atkdmg[atkname];
-}
-
-
-
-int pokemon::takedmg(string atkname, string pokemonname) {
-    cout<<pokemonname<<" attacked you with "<<atkname;
-    hp -= atkdmg[atkname];
-    if (hp < 0) hp = 0;
-    return hp;
-}
 
 
 string pokemon::
@@ -122,15 +100,7 @@ istream& operator>>(istream& in, trainer& t) {
 }
 
 
-trainer::trainer(string n, int id, int w,int l, vector<pokemon*> p){
-    name = n;
-    trainerid = id;
-    wallet = w;
-    level = l;
-    for(int i=0;i<p.size();i++){
-    pokemons[p[i]->getname()] = p[i];
-    }
-}
+
 
 void trainer::catchPokemon(pokemon& p) {
     if (!p.isowned()) {
