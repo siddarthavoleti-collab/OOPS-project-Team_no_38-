@@ -33,3 +33,26 @@ Trainer* Environment::addTrainer(
 
     return t;
 }
+pokemon* Environment::addPokemon(
+    const std::string& name,
+    const std::string& type,
+    int level,
+    int maxHp,
+    int atk,
+    const std::vector<std::string>& attacks
+) {
+    pokemon* p = new pokemon(
+        nextPokemonId,
+        name,
+        type,
+        level,
+        maxHp,
+        atk,
+        attacks
+    );
+
+    pokemons.push_back(p);
+    nextPokemonId++;
+
+    return p;
+}
