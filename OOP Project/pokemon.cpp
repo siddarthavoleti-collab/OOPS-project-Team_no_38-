@@ -1,82 +1,105 @@
 #include "pokemon.h"
 
-pokemon::pokemon(
-    int pokemonId,
-    const std::string& name,
-    const std::string& type,
-    int level,
-    int maxHp,
-    int atk,
-    const std::vector<std::string>& attacks
-)
-    : pokemonId(pokemonId),
-      name(name),
-      type(type),
-      level(level),
-      trainerId(-1),
-      hp(maxHp),
-      maxHp(maxHp),
-      atk(atk),
-      attacks(attacks)
-{
-    if (pokemonId <= 0 || name.empty() ||
-        level < 1 || maxHp <= 0 || atk < 0) {
-        throw std::invalid_argument("Invalid Pokemon attributes");
-    }
+pokemon::pokemon(string n, string t, int l, int tid, int h, int a,
+                 vector<string> att) {
+    this->name = n.empty() ? "Unknown" : n;
+    this->type = t.empty() ? "normal" : t;
+    this->level = (l < 0) ? 0 : l;
+    this->trainerid = (tid < -1) ? -1 : tid;
+    this->hp = (h < 0) ? 0 : h;
+    this->atk = (a < 0) ? 0 : a;
+    this->attacks = att;
 }
 
-
-bool pokemon::isFainted() const {
-    return hp == 0;
+ostream& operator<<(ostream& out, const pokemon& p) {
+    out << "Name: " << p.name << ", Type: " << p.type
+        << ", Level: " << p.level << ", HP: " << p.hp
+        << ", Attack: " << p.atk << ", Attacks:";
+    for (int i = 0; i < p.attacks.size(); i++)
+        out << " " << p.attacks[i];
+    return out;
 }
 
-int pokemon::calculateDamage(const std::string& move) const {
-    if (isFainted()) {
-        return 0;
-    }
-
-    // The Pokemon must know the move.
-    auto knownMove = std::find(
-        attacks.begin(),
-        attacks.end(),
-        move
-    );
-
-    if (knownMove == attacks.end()) {
-        return 0;
-    }
-
-    // Look up damage without inserting an unknown move.
-    auto it = atkdmg.find(move);
-
-    if (it == atkdmg.end()) {
-        return 0;
-    }
-
-    return it->second;
+// Input format: name type level hp atk
+istream& operator>>(istream& in, pokemon& p) {
+    string n, t;
+    int l, h, a;
+    in >> n >> t >> l >> h >> a;
+        p.name = n;
+        p.type = t;
+        p.level = l;
+        p.hp = h;
+        p.atk = a;
+    return in;
 }
 
-int pokemon::attack(pokemon& target, const std::string& move) const {
-    if (&target == this || target.isFainted()) {
-        return 0;
-    }
-
-    int damage = calculateDamage(move);
-
-    if (damage == 0) {
-        return 0;
-    }
-
-    return target.takeDamage(damage);
+string pokemon::getname() const {
+    return this->name;
 }
 
-int pokemon::takeDamage(int damage) {
-    if (damage <= 0 || isFainted()) {
+string pokemon::gettype() const {
+    return this->type;
+}
+
+int pokemon::getlevel() const {
+    return this->level;
+}
+
+int pokemon::gethp() const {
+    return this->hp;
+}
+
+int pokemon::getatk() const {
+    return this->atk;
+}
+
+int pokemon::getownerid() const {
+    return this->trainerid;
+}
+
+int pokemon::dodmg(string attack, string target) {
+    if (attack.empty() || target.empty())
+        return 0;
+    bool found = false;
+    for (int i = 0; i < this->attacks.size(); i++) {
+        if (this->attacks[i] == attack) {
+            found = true;
+            break;
+        }
+    }
+    if (!found) {
+        cout << "Invalid attack: " << attack << "\n";
         return 0;
     }
+    cout << this->name << " used " << attack
+         << " on " << target << "\n";
+    return this->atk;
+}
 
-    int actualDamage = std::min(damage, hp);
-    hp -= actualDamage;
+void pokemon::takedmg(int damage) {
+    if (damage <= 0)
+        return;
+    this->hp -= damage;
+    if (this->hp < 0)
+        this->hp = 0;
+}
 
-    return actualDamage;
+bool pokemon::isowned() const {
+    return this->trainerid != -1;
+}
+
+void pokemon::setowner(int id) {
+    if (id >= -1)
+        this->trainerid = id;
+}
+
+void pokemon::sethp(int h) {
+    if (h < 0)
+        h = 0;
+    this->hp = h;
+}
+
+void pokemon::heal(int amount) {
+    if (amount > 0)
+        this->hp += amount;
 }
