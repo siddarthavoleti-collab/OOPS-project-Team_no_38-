@@ -6,11 +6,12 @@
 using namespace std;
 class pokemon{
     private:
+    int pokemonId,
     string name;
     string type;
     int level;
     int trainerid;
-    int hp;
+    int maxHp;
     int atk;
     vector<string> attacks;
    public:
@@ -18,8 +19,10 @@ class pokemon{
    friend istream& operator>>(istream&,pokemon&);
    string getname();
    pokemon(string,string= "normal",int=0,int=-1,int=100,int=20,vector<string> = {});
-   int dodmg(string,string);
-   int takedmg(string,string);
+   bool isFainted() const;
+   int calculateDamage(const std::string& move) const;
+   int attack(pokemon& target, const std::string& move) const;
+   int takeDamage(int damage);
    bool isowned();
    void setowner(int);
    void getownerid();
